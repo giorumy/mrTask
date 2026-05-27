@@ -10,6 +10,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@clerk/nextjs": "^7.4.1",
     "@mrtask/types": "file:../../packages/types",
     "next": "16.2.6",
     "react": "19.2.4",

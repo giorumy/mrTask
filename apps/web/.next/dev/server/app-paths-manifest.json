@@ -5,5 +5,7 @@
   "/dashboard/properties/page": "app/dashboard/properties/page.js",
   "/dashboard/staff/new/page": "app/dashboard/staff/new/page.js",
   "/dashboard/staff/page": "app/dashboard/staff/page.js",
+  "/dashboard/tasks/new/page": "app/dashboard/tasks/new/page.js",
+  "/dashboard/tasks/page": "app/dashboard/tasks/page.js",
   "/page": "app/page.js"
 }

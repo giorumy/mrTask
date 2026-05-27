@@ -6,6 +6,9 @@ import { AppService } from './app.service';
 import { OwnerrezModule } from './ownerrez/ownerrez.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { SyncModule } from './sync/sync.module';
+import { PropertiesModule } from './properties/properties.module';
+import { StaffModule } from './staff/staff.module';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [
@@ -14,6 +17,9 @@ import { SyncModule } from './sync/sync.module';
     PrismaModule,
     OwnerrezModule,
     SyncModule,
+    PropertiesModule,
+    StaffModule,
+    TasksModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -13,25 +13,27 @@ export class OwnerrezService {
       `${process.env.OWNERREZ_USERNAME}:${process.env.OWNERREZ_TOKEN}`,
     ).toString('base64');
   }
+
   private getHeaders() {
     return {
-        Authorization: `Basic ${this.auth}`,
-        'Content-Type': 'application/json',
-        'User-Agent': 'MrTask/1.0',
+      Authorization: `Basic ${this.auth}`,
+      'Content-Type': 'application/json',
+      'User-Agent': 'MrTask/1.0',
     };
   }
+
   async getProperties() {
     try {
-        let allProperties: any[] = [];
-        let offset = 0;
-        const limit = 20;
+      let allProperties: any[] = [];
+      let offset = 0;
+      const limit = 20;
 
-        while (true) {
+      while (true) {
         const response = await firstValueFrom(
-            this.httpService.get(`${this.baseUrl}/properties`, {
+          this.httpService.get(`${this.baseUrl}/properties`, {
             headers: this.getHeaders(),
             params: { limit, offset },
-            }),
+          }),
         );
 
         const { items, count } = response.data;
@@ -39,40 +41,44 @@ export class OwnerrezService {
 
         if (allProperties.length >= count) break;
         offset += limit;
-        }
+      }
 
-        return { items: allProperties, count: allProperties.length };
+      return { items: allProperties, count: allProperties.length };
     } catch (error) {
-        this.logger.error('Failed to fetch properties from OwnerRez', error);
-        throw error;
+      this.logger.error('Failed to fetch properties from OwnerRez', error);
+      throw error;
     }
   }
 
   async getReservations() {
     try {
-        let allReservations: any[] = [];
-        let offset = 0;
-        const limit = 20;
-
-        while (true) {
+      let allReservations: any[] = [];
+      let offset = 0;
+      const limit = 20;
+      const since_utc = new Date(Date.now() - 3 * 365 * 24 * 60 * 60 * 1000).toISOString();
+      
+      while (true) {
         const response = await firstValueFrom(
             this.httpService.get(`${this.baseUrl}/bookings`, {
             headers: this.getHeaders(),
-            params: { limit, offset },
+            params: { limit, offset, since_utc },
             }),
         );
 
-        const { items, count } = response.data;
+        const { items = [] } = response.data;
+        
+        if (items.length === 0) break;
+        
         allReservations = [...allReservations, ...items];
-
-        if (allReservations.length >= count) break;
+        
+        if (items.length < limit) break;
         offset += limit;
-        }
+      }
 
-        return { items: allReservations, count: allReservations.length };
+      return { items: allReservations, count: allReservations.length };
     } catch (error) {
-        this.logger.error('Failed to fetch reservations from OwnerRez', error);
-        throw error;
+      this.logger.error('Failed to fetch reservations from OwnerRez', error);
+      throw error;
     }
   }
 }

@@ -29,24 +29,27 @@ export class TasksService {
   }
 
   create(data: {
-    title: string;
-    type: TaskType;
-    dueDate: string;
-    propertyId: string;
-    assigneeId?: string;
-  }) {
-    return this.prisma.task.create({
-      data: {
-        ...data,
-        dueDate: new Date(data.dueDate),
-      },
-      include: {
-        property: { select: { id: true, name: true } },
-        assignee: { select: { id: true, name: true } },
-      },
-    });
-  }
+  title: string;
+  type: TaskType;
+  dueDate: string;
+  propertyId: string;
+  assigneeId?: string;
+}) {
+  // Parse date as local midnight to avoid timezone shift
+  const [year, month, day] = data.dueDate.split('T')[0].split('-').map(Number);
+  const dueDate = new Date(year, month - 1, day, 12, 0, 0); // noon local time
 
+  return this.prisma.task.create({
+    data: {
+      ...data,
+      dueDate,
+    },
+    include: {
+      property: { select: { id: true, name: true } },
+      assignee: { select: { id: true, name: true } },
+    },
+  });
+}
   updateStatus(id: string, status: TaskStatus) {
     return this.prisma.task.update({
       where: { id },

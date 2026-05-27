@@ -10,6 +10,7 @@ import { PropertiesModule } from './properties/properties.module';
 import { StaffModule } from './staff/staff.module';
 import { TasksModule } from './tasks/tasks.module';
 import { AuthModule } from './auth/auth.module';
+import { TaskTemplatesModule } from './task-templates/task-templates.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { AuthModule } from './auth/auth.module';
     StaffModule,
     TasksModule,
     AuthModule,
+    TaskTemplatesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

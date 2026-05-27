@@ -9,6 +9,7 @@ import { SyncModule } from './sync/sync.module';
 import { PropertiesModule } from './properties/properties.module';
 import { StaffModule } from './staff/staff.module';
 import { TasksModule } from './tasks/tasks.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { TasksModule } from './tasks/tasks.module';
     PropertiesModule,
     StaffModule,
     TasksModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

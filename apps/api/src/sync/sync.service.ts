@@ -43,38 +43,42 @@ export class SyncService {
   async syncReservations() {
     this.logger.log('Syncing reservations from OwnerRez...');
     const { items } = await this.ownerrez.getReservations();
-    let synced = 0;
 
     const now = new Date();
 
-    for (const booking of items) {
-      const arrival = new Date(booking.arrival);
+    // filter first, no DB calls yet
+    const filtered = items.filter(
+        (b) => !b.is_block && new Date(b.arrival) >= now,
+    );
 
-      if (arrival < now) continue;
+    // fetch all properties once
+    const properties = await this.prisma.property.findMany({
+        select: { id: true, ownerRezId: true },
+    });
+    const propertyMap = new Map(properties.map((p) => [p.ownerRezId, p.id]));
 
-      const property = await this.prisma.property.findUnique({
-        where: { ownerRezId: String(booking.property_id) },
-      });
+    // batch upserts
+    const upserts = filtered
+        .filter((b) => propertyMap.has(String(b.property_id)))
+        .map((booking) =>
+        this.prisma.reservation.upsert({
+            where: { ownerRezId: String(booking.id) },
+            update: {
+            guestArrival: new Date(booking.arrival),
+            guestDeparture: new Date(booking.departure),
+            },
+            create: {
+            ownerRezId: String(booking.id),
+            propertyId: propertyMap.get(String(booking.property_id))!,
+            guestArrival: new Date(booking.arrival),
+            guestDeparture: new Date(booking.departure),
+            },
+        }),
+        );
 
-      if (!property) continue;
+    await this.prisma.$transaction(upserts);
 
-      await this.prisma.reservation.upsert({
-        where: { ownerRezId: String(booking.id) },
-        update: {
-          guestArrival: new Date(booking.arrival),
-          guestDeparture: new Date(booking.departure),
-        },
-        create: {
-          ownerRezId: String(booking.id),
-          propertyId: property.id,
-          guestArrival: new Date(booking.arrival),
-          guestDeparture: new Date(booking.departure),
-        },
-      });
-      synced++;
-    }
-
-    this.logger.log(`Synced ${synced} reservations.`);
-    return { synced };
+    this.logger.log(`Synced ${upserts.length} reservations.`);
+    return { synced: upserts.length };
   }
 }

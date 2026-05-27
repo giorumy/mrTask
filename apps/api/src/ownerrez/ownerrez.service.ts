@@ -22,29 +22,57 @@ export class OwnerrezService {
   }
   async getProperties() {
     try {
-      const response = await firstValueFrom(
-        this.httpService.get(`${this.baseUrl}/properties`, {
-          headers: this.getHeaders(),
-        }),
-      );
-      return response.data;
+        let allProperties: any[] = [];
+        let offset = 0;
+        const limit = 20;
+
+        while (true) {
+        const response = await firstValueFrom(
+            this.httpService.get(`${this.baseUrl}/properties`, {
+            headers: this.getHeaders(),
+            params: { limit, offset },
+            }),
+        );
+
+        const { items, count } = response.data;
+        allProperties = [...allProperties, ...items];
+
+        if (allProperties.length >= count) break;
+        offset += limit;
+        }
+
+        return { items: allProperties, count: allProperties.length };
     } catch (error) {
-      this.logger.error('Failed to fetch properties from OwnerRez', error);
-      throw error;
+        this.logger.error('Failed to fetch properties from OwnerRez', error);
+        throw error;
     }
   }
 
   async getReservations() {
     try {
-      const response = await firstValueFrom(
-        this.httpService.get(`${this.baseUrl}/bookings`, {
-          headers: this.getHeaders(),
-        }),
-      );
-      return response.data;
+        let allReservations: any[] = [];
+        let offset = 0;
+        const limit = 20;
+
+        while (true) {
+        const response = await firstValueFrom(
+            this.httpService.get(`${this.baseUrl}/bookings`, {
+            headers: this.getHeaders(),
+            params: { limit, offset },
+            }),
+        );
+
+        const { items, count } = response.data;
+        allReservations = [...allReservations, ...items];
+
+        if (allReservations.length >= count) break;
+        offset += limit;
+        }
+
+        return { items: allReservations, count: allReservations.length };
     } catch (error) {
-      this.logger.error('Failed to fetch reservations from OwnerRez', error);
-      throw error;
+        this.logger.error('Failed to fetch reservations from OwnerRez', error);
+        throw error;
     }
   }
 }

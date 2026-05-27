@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { API_URL } from '@/lib/api'
 
 export default function NewTaskPage() {
   const router = useRouter()
@@ -17,11 +18,11 @@ export default function NewTaskPage() {
   const [dueDate, setDueDate] = useState('')
 
   useEffect(() => {
-    fetch('http://localhost:3001/properties')
+    fetch(`${API_URL}/properties`)
       .then((r) => r.json())
       .then(setProperties)
 
-    fetch('http://localhost:3001/staff')
+    fetch(`${API_URL}/staff`)
       .then((r) => r.json())
       .then(setStaff)
   }, [])
@@ -36,7 +37,7 @@ export default function NewTaskPage() {
     setError('')
 
     try {
-      const res = await fetch('http://localhost:3001/tasks', {
+      const res = await fetch(`${API_URL}/tasks`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -1,7 +1,8 @@
 import StatusUpdater from './StatusUpdater'
+import { API_URL } from '@/lib/api'
 
 async function getTask(id: string) {
-  const res = await fetch(`http://localhost:3001/tasks/${id}`, {
+  const res = await fetch(` ${API_URL}/tasks/${id}`, {
     cache: 'no-store',
   })
   return res.json()

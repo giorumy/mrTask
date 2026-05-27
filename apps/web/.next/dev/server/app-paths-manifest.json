@@ -1,12 +1,12 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
   "/dashboard/page": "app/dashboard/page.js",
-  "/dashboard/properties/[id]/page": "app/dashboard/properties/[id]/page.js",
   "/dashboard/properties/page": "app/dashboard/properties/page.js",
-  "/dashboard/staff/new/page": "app/dashboard/staff/new/page.js",
   "/dashboard/staff/page": "app/dashboard/staff/page.js",
-  "/dashboard/tasks/[id]/page": "app/dashboard/tasks/[id]/page.js",
   "/dashboard/tasks/new/page": "app/dashboard/tasks/new/page.js",
   "/dashboard/tasks/page": "app/dashboard/tasks/page.js",
-  "/page": "app/page.js"
+  "/dashboard/templates/page": "app/dashboard/templates/page.js",
+  "/staff/login/page": "app/staff/login/page.js",
+  "/staff/tasks/[id]/page": "app/staff/tasks/[id]/page.js",
+  "/staff/tasks/page": "app/staff/tasks/page.js"
 }

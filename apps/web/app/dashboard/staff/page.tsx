@@ -1,5 +1,7 @@
+import { API_URL } from '@/lib/api'
+
 async function getStaff() {
-  const res = await fetch('http://localhost:3001/staff', {
+  const res = await fetch(`${API_URL}/staff`, {
     cache: 'no-store',
   })
   return res.json()

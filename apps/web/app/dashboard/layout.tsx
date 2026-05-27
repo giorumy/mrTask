@@ -21,6 +21,9 @@ export default function DashboardLayout({
             <Link href="/dashboard/tasks" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
               Tasks
             </Link>
+            <Link href="/dashboard/templates" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
+              Templates
+            </Link>
             <Link href="/dashboard/staff" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
               Staff
             </Link>

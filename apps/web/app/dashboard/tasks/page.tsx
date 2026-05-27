@@ -1,7 +1,9 @@
 import Link from 'next/link'
+import { API_URL } from '@/lib/api'
+
 
 async function getTasks() {
-  const res = await fetch('http://localhost:3001/tasks', {
+  const res = await fetch(`${API_URL}/tasks`, {
     cache: 'no-store',
   })
   return res.json()

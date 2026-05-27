@@ -1,5 +1,7 @@
+import { API_URL } from '@/lib/api'
+
 async function getProperty(id: string) {
-  const res = await fetch(`http://localhost:3001/properties/${id}`, {
+  const res = await fetch(` ${API_URL}/properties/${id}`, {
     cache: 'no-store',
   })
   return res.json()
@@ -15,9 +17,18 @@ export default async function PropertyDetailPage({
 
   return (
     <div>
-      <a href="/dashboard/properties" className="text-sm text-gray-500 hover:text-gray-900 mb-6 inline-block">
+      <div className="flex items-center justify-between mb-6">
+      <a href="/dashboard/properties" className="text-sm text-gray-500 hover:text-gray-900">
         ← Back to Properties
       </a>
+      
+      <a
+        href={`/dashboard/properties/${property.id}/edit`}
+        className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700"
+      >
+        Edit Property
+      </a>
+    </div>      
 
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden mb-6">
         {property.coverImageUrl && (

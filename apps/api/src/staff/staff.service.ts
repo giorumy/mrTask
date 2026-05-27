@@ -36,4 +36,11 @@ export class StaffService {
   remove(id: string) {
     return this.prisma.user.delete({ where: { id } });
   }
+
+  findOne(id: string) {
+    return this.prisma.user.findUnique({
+        where: { id },
+        select: { id: true, name: true, role: true, createdAt: true },
+    });
+}
 }

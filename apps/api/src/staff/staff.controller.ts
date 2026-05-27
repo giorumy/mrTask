@@ -10,6 +10,11 @@ export class StaffController {
     return this.staffService.findAll();
   }
 
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.staffService.findOne(id);
+  }
+
   @Post()
   create(@Body() body: { name: string; pin: string }) {
     return this.staffService.create(body);

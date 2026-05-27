@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  STAFF
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum TaskType {
+  CLEANING
+  INSPECTION
+  MAINTENANCE
+  OTHER
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  role      Role
+  clerkId   String?  @unique
+  pin       String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assignedTasks Task[]
+}
+
+model Property {
+  id           String   @id @default(cuid())
+  name         String
+  address      String
+  coverImageUrl String?
+  wifiPassword String?
+  doorPin      String?
+  ownerRezId   String?  @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  reservations Reservation[]
+  tasks        Task[]
+}
+
+model Reservation {
+  id             String   @id @default(cuid())
+  propertyId     String
+  guestArrival   DateTime
+  guestDeparture DateTime
+  ownerRezId     String?  @unique
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  property Property @relation(fields: [propertyId], references: [id])
+}
+
+model TaskTemplate {
+  id         String   @id @default(cuid())
+  name       String
+  type       TaskType
+  recurrence String?
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  tasks Task[]
+}
+
+model Task {
+  id         String     @id @default(cuid())
+  title      String
+  type       TaskType
+  status     TaskStatus @default(PENDING)
+  dueDate    DateTime
+  propertyId String
+  assigneeId String?
+  templateId String?
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  property Property      @relation(fields: [propertyId], references: [id])
+  assignee User?         @relation(fields: [assigneeId], references: [id])
+  template TaskTemplate? @relation(fields: [templateId], references: [id])
+  photos   Photo[]
+}
+
+model Photo {
+  id         String   @id @default(cuid())
+  taskId     String
+  s3Key      String
+  uploadedAt DateTime @default(now())
+
+  task Task @relation(fields: [taskId], references: [id])
+}
+
+model SyncLog {
+  id         String   @id @default(cuid())
+  entity     String
+  ownerRezId String
+  syncedAt   DateTime @default(now())
+  status     String
+}

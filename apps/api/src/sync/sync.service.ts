@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import {Cron, CronExpression} from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
 import { OwnerrezService } from '../ownerrez/ownerrez.service';
 
@@ -10,6 +11,13 @@ export class SyncService {
     private readonly prisma: PrismaService,
     private readonly ownerrez: OwnerrezService,
   ) {}
+
+  @Cron(CronExpression.EVERY_6_HOURS)
+  async scheduledSync() {
+    this.logger.log('Running scheduled OwnerRez sync...');
+    await this.syncProperties();
+    await this.syncReservations();
+  }
 
   async syncProperties() {
     this.logger.log('Syncing properties from OwnerRez...');

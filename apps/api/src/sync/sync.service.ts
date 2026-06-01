@@ -52,11 +52,14 @@ export class SyncService {
     this.logger.log('Syncing reservations from OwnerRez...');
     const { items } = await this.ownerrez.getReservations();
 
-    const now = new Date();
+    const today = new Date().toISOString().split('T')[0];
 
-    // filter first, no DB calls yet
     const filtered = items.filter(
-        (b) => !b.is_block && new Date(b.arrival) >= now,
+    (b) =>
+        !b.is_block &&
+        b.arrival >= today &&
+        b.status !== 'canceled' &&
+        b.status !== 'cancelled'
     );
 
     // fetch all properties once
@@ -88,5 +91,21 @@ export class SyncService {
 
     this.logger.log(`Synced ${upserts.length} reservations.`);
     return { synced: upserts.length };
+  }
+
+  async resetAndSync() {
+    this.logger.log('Resetting all data and resyncing...');
+
+    // Delete in correct order (respect foreign keys)
+    await this.prisma.photo.deleteMany();
+    await this.prisma.task.deleteMany();
+    await this.prisma.reservation.deleteMany();
+    await this.prisma.property.deleteMany();
+
+    // Resync everything
+    await this.syncProperties();
+    await this.syncReservations();
+
+    this.logger.log('Reset complete.');
   }
 }

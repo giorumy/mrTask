@@ -14,4 +14,10 @@ export class SyncController {
   syncReservations() {
     return this.syncService.syncReservations();
   }
+
+  @Post('reset')
+  async reset() {
+    await this.syncService.resetAndSync();
+    return { message: 'Reset complete' };
+  }
 }

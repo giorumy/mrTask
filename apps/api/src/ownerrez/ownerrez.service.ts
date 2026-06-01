@@ -51,34 +51,36 @@ export class OwnerrezService {
   }
 
   async getReservations() {
-    try {
-      let allReservations: any[] = [];
-      let offset = 0;
-      const limit = 20;
-      const since_utc = new Date(Date.now() - 3 * 365 * 24 * 60 * 60 * 1000).toISOString();
-      
-      while (true) {
-        const response = await firstValueFrom(
-            this.httpService.get(`${this.baseUrl}/bookings`, {
-            headers: this.getHeaders(),
-            params: { limit, offset, since_utc },
-            }),
-        );
+  try {
+    let allReservations: any[] = [];
+    let offset = 0;
+    const limit = 20;
+    const since_utc = '2025-10-01T00:00:00Z';
 
-        const { items = [] } = response.data;
-        
-        if (items.length === 0) break;
-        
-        allReservations = [...allReservations, ...items];
-        
-        if (items.length < limit) break;
-        offset += limit;
-      }
+    while (true) {
+      const response = await firstValueFrom(
+        this.httpService.get(`${this.baseUrl}/bookings`, {
+          headers: this.getHeaders(),
+          params: { limit, offset, since_utc },
+          timeout: 30000,
+        }),
+      );
 
-      return { items: allReservations, count: allReservations.length };
-    } catch (error) {
-      this.logger.error('Failed to fetch reservations from OwnerRez', error);
-      throw error;
+      const { items = [] } = response.data;
+      this.logger.log(`OwnerRez bookings page offset=${offset} items=${items.length}`);
+
+      allReservations = [...allReservations, ...items];
+
+      if (items.length < limit) break;
+
+      offset += limit;
     }
+
+    this.logger.log(`OwnerRez total fetched: ${allReservations.length}`);
+    return { items: allReservations, count: allReservations.length };
+  } catch (error) {
+    this.logger.error('Failed to fetch reservations from OwnerRez', error);
+    throw error;
+  }
   }
 }

@@ -12,7 +12,7 @@ export default function NewTaskPage() {
   const [error, setError] = useState('')
 
   const [title, setTitle] = useState('')
-  const [taskType, setTaskType] = useState('ONE_OFF')
+  const [taskType, setTaskType] = useState('CLEANING')
   const [propertyId, setPropertyId] = useState('')
   const [assignedTo, setAssignedTo] = useState('')
   const [dueDate, setDueDate] = useState('')
@@ -91,10 +91,10 @@ export default function NewTaskPage() {
             onChange={(e) => setTaskType(e.target.value)}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="ONE_OFF">One Off</option>
-            <option value="ARRIVAL">Arrival</option>
-            <option value="DEPARTURE">Departure</option>
-            <option value="RECURRING">Recurring</option>
+            <option value="CLEANING">Cleaning</option>
+            <option value="MAINTENANCE">Maintenance</option>
+            <option value="INSPECTION">Inspection</option>
+            <option value="OTHER">Other</option>
           </select>
         </div>
 

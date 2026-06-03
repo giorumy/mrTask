@@ -26,8 +26,9 @@ export class TasksService {
     return this.prisma.task.findUnique({
       where: { id },
       include: {
-        property: true,
+        property: { select: { id: true, name: true, coverImageUrl: true, address: true } },
         assignee: { select: { id: true, name: true } },
+        template: { select: { id: true, name: true, triggerType: true } },
       },
     });
   }

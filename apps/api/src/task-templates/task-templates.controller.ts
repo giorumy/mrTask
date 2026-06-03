@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Patch, Delete, Param, Body } from '@nestjs/common';
 import { TaskTemplatesService } from './task-templates.service';
-import { TaskType } from '@prisma/client';
+import { TaskType, TriggerType } from '@prisma/client';
 
 @Controller('task-templates')
 export class TaskTemplatesController {
@@ -17,7 +17,7 @@ export class TaskTemplatesController {
   }
 
   @Post()
-  create(@Body() body: { name: string; type: TaskType; recurrence?: string; isActive?: boolean }) {
+  create(@Body() body: any) {
     return this.taskTemplatesService.create(body);
   }
 
@@ -32,7 +32,10 @@ export class TaskTemplatesController {
   }
 
   @Post(':id/apply')
-  apply(@Param('id') id: string, @Body() body: { propertyId: string; assigneeId?: string; dueDate: string }) {
+  apply(
+    @Param('id') id: string,
+    @Body() body: { propertyId: string; assignedTo?: string; dueDate: string },
+  ) {
     return this.taskTemplatesService.applyTemplate(id, body);
   }
 }

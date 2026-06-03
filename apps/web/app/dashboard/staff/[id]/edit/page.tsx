@@ -10,35 +10,44 @@ export default function EditStaffPage() {
   const id = params.id as string
 
   const [name, setName] = useState('')
-  const [pin, setPin] = useState('')
+  const [email, setEmail] = useState('')
+  const [role, setRole] = useState('CLEANER')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => {
     fetch(`${API_URL}/staff/${id}`)
-        .then((r) => r.json())
-        .then((member) => {
-        if (member) setName(member.name)
-        })
+      .then((r) => r.json())
+      .then((member) => {
+        if (member) {
+          setName(member.name)
+          setEmail(member.email ?? '')
+          setRole(member.role)
+        }
+      })
   }, [id])
 
   async function handleSubmit() {
-    if (!name) { setError('Name is required'); return }
+    if (!name || !email) {
+      setError('Name and email are required')
+      return
+    }
 
     setLoading(true)
     setError('')
 
     try {
-      const body: any = { name }
-      if (pin) body.pin = pin
-
       const res = await fetch(`${API_URL}/staff/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+        body: JSON.stringify({ name, email, role }),
       })
 
-      if (!res.ok) throw new Error('Failed to update staff member')
+      if (!res.ok) {
+        const data = await res.json()
+        setError(data.message ?? 'Something went wrong')
+        return
+      }
 
       router.push('/dashboard/staff')
       router.refresh()
@@ -51,7 +60,6 @@ export default function EditStaffPage() {
 
   async function handleDelete() {
     if (!confirm('Are you sure you want to delete this staff member?')) return
-
     await fetch(`${API_URL}/staff/${id}`, { method: 'DELETE' })
     router.push('/dashboard/staff')
     router.refresh()
@@ -81,17 +89,26 @@ export default function EditStaffPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            New PIN <span className="text-gray-400 font-normal">(leave blank to keep current)</span>
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
           <input
-            type="password"
-            value={pin}
-            onChange={(e) => setPin(e.target.value)}
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter new PIN"
-            maxLength={4}
           />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="CLEANER">Cleaner</option>
+            <option value="MAINTENANCE">Maintenance</option>
+            <option value="BOTH">Both</option>
+          </select>
         </div>
 
         <button

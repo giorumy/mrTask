@@ -1,7 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -10,25 +9,43 @@ export class AuthService {
     private readonly jwt: JwtService,
   ) {}
 
-  async staffLogin(pin: string) {
-    const staffMembers = await this.prisma.user.findMany({
-      where: { role: 'STAFF' },
-      select: { id: true, name: true, pin: true, role: true },
+  async staffLogin(clerkId: string) {
+    const staff = await this.prisma.staffMember.findUnique({
+      where: { clerkId },
+      select: { id: true, name: true, role: true },
     });
 
-    for (const staff of staffMembers) {
-      if (!staff.pin) continue;
-      const match = await bcrypt.compare(pin, staff.pin);
-      if (match) {
-        const token = this.jwt.sign({
-          sub: staff.id,
-          name: staff.name,
-          role: staff.role,
-        });
-        return { token, staff: { id: staff.id, name: staff.name } };
-      }
+    if (!staff) throw new UnauthorizedException('Staff member not found');
+
+    const token = this.jwt.sign({
+      sub: staff.id,
+      name: staff.name,
+      role: staff.role,
+    });
+
+    return { token, staff: { id: staff.id, name: staff.name } };
+  }
+
+  async linkAndLogin(clerkId: string, email: string) {
+    let staff = await this.prisma.staffMember.findUnique({ where: { clerkId } });
+
+    if (!staff) {
+      // Try to link by email
+      const byEmail = await this.prisma.staffMember.findUnique({ where: { email } });
+      if (!byEmail) throw new UnauthorizedException('No staff account found for this email');
+
+      staff = await this.prisma.staffMember.update({
+        where: { email },
+        data: { clerkId },
+      });
     }
 
-    throw new UnauthorizedException('Invalid PIN');
+    const token = this.jwt.sign({
+      sub: staff.id,
+      name: staff.name,
+      role: staff.role,
+    });
+
+    return { token, staff: { id: staff.id, name: staff.name } };
   }
 }

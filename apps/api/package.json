@@ -21,6 +21,7 @@
     "dev": "nest start --watch"
   },
   "dependencies": {
+    "@clerk/backend": "^3.4.14",
     "@mrtask/types": "file:../../packages/types",
     "@nestjs/axios": "^4.0.1",
     "@nestjs/common": "^11.0.0",

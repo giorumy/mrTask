@@ -12,9 +12,9 @@ export default function NewTaskPage() {
   const [error, setError] = useState('')
 
   const [title, setTitle] = useState('')
-  const [type, setType] = useState('CLEANING')
+  const [taskType, setTaskType] = useState('ONE_OFF')
   const [propertyId, setPropertyId] = useState('')
-  const [assigneeId, setAssigneeId] = useState('')
+  const [assignedTo, setAssignedTo] = useState('')
   const [dueDate, setDueDate] = useState('')
 
   useEffect(() => {
@@ -42,9 +42,9 @@ export default function NewTaskPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title,
-          type,
+          taskType,
           propertyId,
-          assigneeId: assigneeId || undefined,
+          assignedTo: assignedTo || undefined,
           dueDate,
         }),
       })
@@ -87,14 +87,14 @@ export default function NewTaskPage() {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
           <select
-            value={type}
-            onChange={(e) => setType(e.target.value)}
+            value={taskType}
+            onChange={(e) => setTaskType(e.target.value)}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="CLEANING">Cleaning</option>
-            <option value="INSPECTION">Inspection</option>
-            <option value="MAINTENANCE">Maintenance</option>
-            <option value="OTHER">Other</option>
+            <option value="ONE_OFF">One Off</option>
+            <option value="ARRIVAL">Arrival</option>
+            <option value="DEPARTURE">Departure</option>
+            <option value="RECURRING">Recurring</option>
           </select>
         </div>
 
@@ -115,8 +115,8 @@ export default function NewTaskPage() {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Assign To</label>
           <select
-            value={assigneeId}
-            onChange={(e) => setAssigneeId(e.target.value)}
+            value={assignedTo}
+            onChange={(e) => setAssignedTo(e.target.value)}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Unassigned</option>

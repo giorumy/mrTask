@@ -97,7 +97,6 @@ export class SyncService {
     this.logger.log('Resetting all data and resyncing...');
 
     // Delete in correct order (respect foreign keys)
-    await this.prisma.photo.deleteMany();
     await this.prisma.task.deleteMany();
     await this.prisma.reservation.deleteMany();
     await this.prisma.property.deleteMany();

@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Patch, Delete, Param, Body } from '@nestjs/common';
 import { StaffService } from './staff.service';
+import { StaffRole } from '@prisma/client';
 
 @Controller('staff')
 export class StaffController {
@@ -16,12 +17,12 @@ export class StaffController {
   }
 
   @Post()
-  create(@Body() body: { name: string; pin: string }) {
+  create(@Body() body: { name: string; email: string; role?: StaffRole }) {
     return this.staffService.create(body);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() body: { name?: string; pin?: string }) {
+  update(@Param('id') id: string, @Body() body: { name?: string; email?: string; role?: StaffRole }) {
     return this.staffService.update(id, body);
   }
 

@@ -10,9 +10,9 @@ export class TasksController {
   findAll(
     @Query('status') status?: TaskStatus,
     @Query('propertyId') propertyId?: string,
-    @Query('assigneeId') assigneeId?: string,
+    @Query('assignedTo') assignedTo?: string,
   ) {
-    return this.tasksService.findAll({ status, propertyId, assigneeId });
+    return this.tasksService.findAll({ status, propertyId, assignedTo });
   }
 
   @Get(':id')
@@ -21,13 +21,18 @@ export class TasksController {
   }
 
   @Post()
-  create(@Body() body: { title: string; type: TaskType; dueDate: string; propertyId: string; assigneeId?: string }) {
+  create(@Body() body: any) {
     return this.tasksService.create(body);
   }
 
   @Patch(':id/status')
   updateStatus(@Param('id') id: string, @Body() body: { status: TaskStatus }) {
     return this.tasksService.updateStatus(id, body.status);
+  }
+
+  @Patch(':id/checklist')
+  updateChecklist(@Param('id') id: string, @Body() body: { checklistItems: any[] }) {
+    return this.tasksService.updateChecklist(id, body.checklistItems);
   }
 
   @Patch(':id')

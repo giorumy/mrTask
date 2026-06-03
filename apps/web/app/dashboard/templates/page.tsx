@@ -10,9 +10,16 @@ export default async function TemplatesPage() {
 
   const typeColors: Record<string, string> = {
     CLEANING: 'bg-blue-100 text-blue-700',
-    INSPECTION: 'bg-yellow-100 text-yellow-700',
     MAINTENANCE: 'bg-red-100 text-red-700',
+    INSPECTION: 'bg-yellow-100 text-yellow-700',
     OTHER: 'bg-gray-100 text-gray-700',
+  }
+
+  const triggerLabels: Record<string, string> = {
+    ONE_OFF: 'One Off',
+    DEPARTURE: 'After Departure',
+    ARRIVAL: 'Before Arrival',
+    RECURRING: 'Recurring',
   }
 
   return (
@@ -37,39 +44,40 @@ export default async function TemplatesPage() {
       ) : (
         <div className="bg-white rounded-lg border border-gray-200 divide-y divide-gray-200">
           {templates.map((template: any) => (
-            <div key={template.id} className="flex items-center justify-between p-4">
-              <div className="flex items-center gap-3">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <p className="font-medium text-gray-900">{template.name}</p>
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${typeColors[template.type]}`}>
-                      {template.type}
+            <div key={template.id} className="flex items-start justify-between p-4">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="font-medium text-gray-900">{template.name}</p>
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${typeColors[template.taskType]}`}>
+                    {template.taskType}
+                  </span>
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">
+                    {triggerLabels[template.triggerType]}
+                  </span>
+                  {!template.isActive && (
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">
+                      Inactive
                     </span>
-                    {!template.isActive && (
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">
-                        Inactive
-                      </span>
-                    )}
-                  </div>
-                  {template.recurrence && (
-                    <p className="text-xs text-gray-500 mt-0.5">Recurrence: {template.recurrence}</p>
                   )}
-                  <p className="text-xs text-gray-400 mt-0.5">
-                    Used {template._count?.tasks ?? 0} times
+                </div>
+                {template.description && (
+                  <p className="text-xs text-gray-500 mt-1">{template.description}</p>
+                )}
+                <div className="flex items-center gap-3 mt-1">
+                  <p className="text-xs text-gray-400">
+                    {template.properties?.length ?? 0} {template.properties?.length === 1 ? 'property' : 'properties'}
                   </p>
+                  {template.defaultAssignee && (
+                    <p className="text-xs text-gray-400">→ {template.defaultAssignee.name}</p>
+                  )}
+                  <p className="text-xs text-gray-400">Used {template._count?.tasks ?? 0} times</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <a
-                  href={`/dashboard/templates/${template.id}/apply`}
-                  className="text-sm text-blue-600 hover:underline"
-                >
+              <div className="flex items-center gap-3 ml-4">
+                <a href={`/dashboard/templates/${template.id}/apply`} className="text-sm text-blue-600 hover:underline">
                   Apply
                 </a>
-                <a
-                  href={`/dashboard/templates/${template.id}/edit`}
-                  className="text-sm text-gray-500 hover:underline"
-                >
+                <a href={`/dashboard/templates/${template.id}/edit`} className="text-sm text-gray-500 hover:underline">
                   Edit
                 </a>
               </div>

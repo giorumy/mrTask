@@ -12,17 +12,30 @@ enum Role {
   STAFF
 }
 
-enum TaskStatus {
-  PENDING
-  IN_PROGRESS
-  COMPLETED
+enum StaffRole {
+  CLEANER
+  MAINTENANCE
+  BOTH
 }
 
 enum TaskType {
   CLEANING
-  INSPECTION
   MAINTENANCE
+  INSPECTION
   OTHER
+}
+
+enum TriggerType {
+  ARRIVAL
+  DEPARTURE
+  RECURRING
+  ONE_OFF
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
 }
 
 model User {
@@ -30,26 +43,38 @@ model User {
   name      String
   role      Role
   clerkId   String?  @unique
-  pin       String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
 
-  assignedTasks Task[]
+model StaffMember {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  email     String    @unique
+  role      StaffRole @default(CLEANER)
+  clerkId   String?   @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  assignedTasks    Task[]
+  defaultTemplates TaskTemplate[]
 }
 
 model Property {
-  id           String   @id @default(cuid())
-  name         String
-  address      String
+  id            String   @id @default(cuid())
+  name          String
+  address       String
   coverImageUrl String?
-  wifiPassword String?
-  doorPin      String?
-  ownerRezId   String?  @unique
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  wifiPassword  String?
+  doorPin       String?
+  ownerRezId    String?  @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  reservations Reservation[]
-  tasks        Task[]
+  reservations      Reservation[]
+  tasks             Task[]
+  templateLinks     TaskTemplateProperty[]
+  recurrenceLogs    TaskRecurrenceLog[]
 }
 
 model Reservation {
@@ -62,45 +87,70 @@ model Reservation {
   updatedAt      DateTime @updatedAt
 
   property Property @relation(fields: [propertyId], references: [id])
+  tasks    Task[]
 }
 
 model TaskTemplate {
-  id         String   @id @default(cuid())
-  name       String
-  type       TaskType
-  recurrence String?
-  isActive   Boolean  @default(true)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id                     String      @id @default(cuid())
+  name                   String
+  description            String?
+  taskType               TaskType    @default(CLEANING)
+  triggerType            TriggerType @default(ONE_OFF)
+  recurrenceIntervalDays Int?
+  defaultAssigneeId      String?
+  checklistItems         Json?
+  isActive               Boolean     @default(true)
+  createdAt              DateTime    @default(now())
+  updatedAt              DateTime    @updatedAt
 
-  tasks Task[]
+  defaultAssignee  StaffMember?           @relation(fields: [defaultAssigneeId], references: [id])
+  properties       TaskTemplateProperty[]
+  tasks            Task[]
+  recurrenceLogs   TaskRecurrenceLog[]
+}
+
+model TaskTemplateProperty {
+  id         String @id @default(cuid())
+  templateId String
+  propertyId String
+
+  template TaskTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  property Property     @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@unique([templateId, propertyId])
 }
 
 model Task {
-  id         String     @id @default(cuid())
-  title      String
-  type       TaskType
-  status     TaskStatus @default(PENDING)
-  dueDate    DateTime
-  propertyId String
-  assigneeId String?
-  templateId String?
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  id             String     @id @default(cuid())
+  title          String
+  description    String?
+  taskType       TaskType   @default(CLEANING)
+  status         TaskStatus @default(PENDING)
+  propertyId     String
+  templateId     String?
+  bookingId      String?
+  assignedTo     String?
+  dueDate        DateTime
+  completedAt    DateTime?
+  checklistItems Json?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
 
-  property Property      @relation(fields: [propertyId], references: [id])
-  assignee User?         @relation(fields: [assigneeId], references: [id])
-  template TaskTemplate? @relation(fields: [templateId], references: [id])
-  photos   Photo[]
+  property  Property      @relation(fields: [propertyId], references: [id])
+  template  TaskTemplate? @relation(fields: [templateId], references: [id])
+  booking   Reservation?  @relation(fields: [bookingId], references: [id])
+  assignee  StaffMember?  @relation(fields: [assignedTo], references: [id])
 }
 
-model Photo {
-  id         String   @id @default(cuid())
-  taskId     String
-  s3Key      String
-  uploadedAt DateTime @default(now())
+model TaskRecurrenceLog {
+  id              String   @id @default(cuid())
+  templateId      String
+  propertyId      String
+  lastGeneratedAt DateTime @default(now())
+  nextDueDate     DateTime
 
-  task Task @relation(fields: [taskId], references: [id])
+  template TaskTemplate @relation(fields: [templateId], references: [id])
+  property Property     @relation(fields: [propertyId], references: [id])
 }
 
 model SyncLog {

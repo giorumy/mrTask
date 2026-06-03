@@ -7,17 +7,14 @@ import { API_URL } from '@/lib/api'
 export default function NewStaffPage() {
   const router = useRouter()
   const [name, setName] = useState('')
-  const [pin, setPin] = useState('')
+  const [email, setEmail] = useState('')
+  const [role, setRole] = useState('CLEANER')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
   async function handleSubmit() {
-    if (!name || !pin) {
-      setError('Name and PIN are required')
-      return
-    }
-    if (pin.length < 4) {
-      setError('PIN must be at least 4 digits')
+    if (!name || !email) {
+      setError('Name and email are required')
       return
     }
 
@@ -28,14 +25,18 @@ export default function NewStaffPage() {
       const res = await fetch(`${API_URL}/staff`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, pin }),
+        body: JSON.stringify({ name, email, role }),
       })
 
-      if (!res.ok) throw new Error('Failed to create staff member')
+      if (!res.ok) {
+        const data = await res.json()
+        setError(data.message ?? 'Something went wrong')
+        return
+      }
 
       router.push('/dashboard/staff')
       router.refresh()
-    } catch (e) {
+    } catch {
       setError('Something went wrong. Please try again.')
     } finally {
       setLoading(false)
@@ -67,16 +68,28 @@ export default function NewStaffPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">PIN</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
           <input
-            type="password"
-            value={pin}
-            onChange={(e) => setPin(e.target.value)}
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="4-digit PIN"
-            maxLength={6}
+            placeholder="john@example.com"
           />
-          <p className="text-xs text-gray-500 mt-1">Staff will use this PIN to log in</p>
+          <p className="text-xs text-gray-400 mt-1">An invitation will be sent to this email</p>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="CLEANER">Cleaner</option>
+            <option value="MAINTENANCE">Maintenance</option>
+            <option value="BOTH">Both</option>
+          </select>
         </div>
 
         <button

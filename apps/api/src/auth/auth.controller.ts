@@ -5,8 +5,8 @@ import { AuthService } from './auth.service';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('staff/login')
-  staffLogin(@Body() body: { pin: string }) {
-    return this.authService.staffLogin(body.pin);
+  @Post('staff/link')
+  linkAndLogin(@Body() body: { clerkId: string; email: string }) {
+    return this.authService.linkAndLogin(body.clerkId, body.email);
   }
 }

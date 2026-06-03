@@ -55,8 +55,7 @@ export default function StaffLoginPage() {
         <h1 className="text-2xl font-bold text-gray-900 text-center mb-6">Staff Login</h1>
         <SignIn
           routing="hash"
-          afterSignInUrl="/staff/login"
-          signUpUrl={undefined}
+          fallbackRedirectUrl="/staff/login"
         />
       </div>
     </div>

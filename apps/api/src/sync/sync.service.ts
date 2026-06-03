@@ -57,7 +57,7 @@ export class SyncService {
     const filtered = items.filter(
     (b) =>
         !b.is_block &&
-        b.arrival >= today &&
+        b.departure >= today &&
         b.status !== 'canceled' &&
         b.status !== 'cancelled'
     );
@@ -88,6 +88,15 @@ export class SyncService {
         );
 
     await this.prisma.$transaction(upserts);
+
+    // Delete reservations that no longer exist in OwnerRez
+    const ownerRezIds = filtered.map((b) => String(b.id));
+    await this.prisma.reservation.deleteMany({
+      where: {
+        ownerRezId: { notIn: ownerRezIds },
+        guestArrival: { gte: new Date(today) }, // only delete future reservations
+      },
+    });
 
     this.logger.log(`Synced ${upserts.length} reservations.`);
     return { synced: upserts.length };

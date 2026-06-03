@@ -11,6 +11,7 @@ import { StaffModule } from './staff/staff.module';
 import { TasksModule } from './tasks/tasks.module';
 import { AuthModule } from './auth/auth.module';
 import { TaskTemplatesModule } from './task-templates/task-templates.module';
+import { TaskGenerationModule } from './task-generation/task-generation.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { TaskTemplatesModule } from './task-templates/task-templates.module';
     TasksModule,
     AuthModule,
     TaskTemplatesModule,
+    TaskGenerationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

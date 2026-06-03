@@ -4,5 +4,7 @@
   "/dashboard/staff/new/page": "app/dashboard/staff/new/page.js",
   "/dashboard/staff/page": "app/dashboard/staff/page.js",
   "/page": "app/page.js",
-  "/staff/login/page": "app/staff/login/page.js"
+  "/sign-in/[[...sign-in]]/page": "app/sign-in/[[...sign-in]]/page.js",
+  "/staff/login/page": "app/staff/login/page.js",
+  "/staff/tasks/page": "app/staff/tasks/page.js"
 }
